@@ -1,0 +1,30 @@
+# md2EPUB Setting
+
+# EPUBファイル名
+bookname: myepub.epub
+
+# 書名
+booktitle: 電書名
+
+# 著者
+aut: おなまえ
+
+# 出版者
+publisher: md2epub
+
+#Language
+lang: ja
+
+#出版日
+# 無い場合は生成日になります
+#pubdate: 
+
+
+# UUID用のURL
+# 無い場合はランダムにUUIDを生成します
+#uuid: 
+
+
+# Debug
+# trueの場合生成した一時ファイルを残します
+debug: true

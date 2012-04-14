@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookID" version="3.0" xml:lang="<%= @lang %>">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:identifier id="BookID">urn:uuid:<%= @uuid %></dc:identifier>
+    <meta refines="#BookID" property="identifier-type">uuid</meta>
+    <dc:title id="title0"><%= @booktitle %></dc:title>
+    <dc:language id="language0"><%= @lang %></dc:language>
+    <dc:creator id="creator0"><%= @aut %></dc:creator>
+    <meta refines="#creator0" property="role">aut</meta>
+    <dc:contributor id="contributor0">md2epub</dc:contributor>
+    <meta refines="#contributor0" property="role">bkp</meta>
+    <dc:publisher id="publisher0">md2epub</dc:publisher>
+    <meta property="dcterms:modified"><%= @pubdate %></meta>
+  </metadata>
+  <manifest>
+    <item id="nav" href="toc.xhtml" media-type="application/xhtml+xml" properties="nav" />
+    <item id="text.cover.xhtml" href="text/cover.xhtml" media-type="application/xhtml+xml" />
+    <% pages.each do |p| %><item id="text.<%= p[:file] %>" href="text/<%= p[:file] %>" media-type="application/xhtml+xml" />
+    <% end -%>
+    <% imagelist.each do |img| %><item id="images.<%= img[:fname] %>" href="images/<%= img[:fname] %>" media-type="<%= img[:mediatype] %>" />
+    <% end -%>
+    <item id="style.epub.css" href="style/epub.css" media-type="text/css" />
+  </manifest>
+  <spine page-progression-direction="rtl">
+    <itemref idref="text.cover.xhtml" linear="yes" />
+    <% pages.each do |p| %><itemref idref="text.<%= p[:file] %>" linear="yes" />
+    <% end -%></spine>
+  <guide>
+    <reference type="cover" title="Cover Page" href="text/cover.xhtml" />
+  </guide>
+</package>
