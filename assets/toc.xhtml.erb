@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html >
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="ja" lang="<%= @lang %>">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="<%= @lang %>" lang="<%= @lang %>">
   <head>
     <link rel="stylesheet" href="style/epub.css" type="text/css" />
     <title><%= @booktitle %> index</title>
@@ -12,8 +12,7 @@
     <nav epub:type="toc" id="toc">
       <ol>
       <% pages.each do |p| %>
-          <li><a href="text/<%= p[:file] %>"><%= p[:pagetitle] %></a></li>
-      <% end %>
+          <li><a href="text/<%= p[:file] %>"><%= p[:pagetitle] %></a></li><% end %>
       </ol>
     </nav>
   </body>
