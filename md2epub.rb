@@ -223,7 +223,7 @@ class Markdown2EPUB
    
     def build
         puts %Q(BUILD::#{@resourcedir})
-        get_title = Regexp.new('^# (.*)$')
+        get_title = Regexp.new('^[#=] (.*)$')
                 
         # load EPUB setting file
         _load_settings()
@@ -233,7 +233,6 @@ class Markdown2EPUB
             :autolink => true,
             :fenced_code => true,
             :fenced_code_blocks => true,
-            :filter_html => true,
             :gh_blockcode => true,
             :hard_wrap => true,
             :lax_html_blocks => true,
@@ -264,7 +263,7 @@ class Markdown2EPUB
         FileUtils.mkdir( contentdir )
         
         # markdown to HTML
-        Dir::glob( @resourcedir + "/*.md" ).each {|file|
+        Dir::glob( @resourcedir + "/*.{md,mkd,markdown}" ).each {|file|
             # puts "#{file}: #{File::stat(file).size} bytes"
             md = File.read( file )
             html =""

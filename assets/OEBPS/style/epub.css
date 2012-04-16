@@ -94,3 +94,8 @@ dl, ol, ul {
     margin: 0.5em;
     padding:0 0 0 2em;
 }
+
+p.author,
+p.pubdate{
+    text-align:center;
+}
