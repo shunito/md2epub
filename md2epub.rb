@@ -229,21 +229,26 @@ class Markdown2EPUB
         _load_settings()
         
         # markdown Render options
-        options = [ 
-            :hard_wrap => true,
+        options = [
+            :autolink => true,
+            :fenced_code => true,
+            :fenced_code_blocks => true,
             :filter_html => true,
+            :gh_blockcode => true,
+            :hard_wrap => true,
+            :lax_html_blocks => true,
             :no_intra_emphasis => true,
             :no_intraemphasis => true,
-            :autolink => true,
             :space_after_headers => true,
-            :fenced_code_blocks => true,
-            :fenced_code => true,
-            :gh_blockcode => true
+            :strikethrough => true,
+            :superscript => true,
+            :tables => true,
+            :xhtml => true
         ]
         rndr = Redcarpet::Markdown.new(Redcarpet::Render::XHTML, *options )
         
         # make working directory
-        @tmpdir = Dir.mktmpdir("mb2epub", @basedir)
+        @tmpdir = Dir.mktmpdir("md2epub", @basedir)
 
         # Fetch Image Class
         images = FetchImages.new( @tmpdir )
@@ -265,8 +270,12 @@ class Markdown2EPUB
             html =""
             
             get_title =~ md
-            pagetitle = $1.chomp              
-            md[ get_title ] = ""
+            if $1 then
+                pagetitle = $1.chomp
+                md[ get_title ] = ""
+            else 
+                pagetitle = "Title not Found"
+            end
             fname = File.basename(file, ".md") << ".xhtml"
             page = {:pagetitle => pagetitle, :file => fname }                
                         
