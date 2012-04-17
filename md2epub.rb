@@ -17,6 +17,7 @@ require 'redcarpet'
 require 'digest/md5'
 require 'open-uri'
 require 'mime/types'
+require 'RedCloth'
 
 class FetchImages
     def initialize( dir )
@@ -223,7 +224,6 @@ class Markdown2EPUB
    
     def build
         puts %Q(BUILD::#{@resourcedir})
-        get_title = Regexp.new('^[#=] (.*)$')
                 
         # load EPUB setting file
         _load_settings()
@@ -263,6 +263,8 @@ class Markdown2EPUB
         FileUtils.mkdir( contentdir )
         
         # markdown to HTML
+        get_title = Regexp.new('^[#=] (.*)$')
+
         Dir::glob( @resourcedir + "/*.{md,mkd,markdown}" ).each {|file|
             # puts "#{file}: #{File::stat(file).size} bytes"
             md = File.read( file )
@@ -287,6 +289,34 @@ class Markdown2EPUB
 
             @pages.push page
         }            
+
+        # textile to HTML
+        get_title = Regexp.new('^h1. (.*)$')
+
+        Dir::glob( @resourcedir + "/*.textile" ).each {|file|
+            # puts "#{file}: #{File::stat(file).size} bytes"
+            textile = File.read( file )
+            html =""
+            
+            get_title =~ textile
+            if $1 then
+                pagetitle = $1.chomp
+                md[ get_title ] = ""
+            else 
+                pagetitle = File.basename(file, ".*")
+            end
+            fname = File.basename(file, ".textile") << ".xhtml"
+            page = {:pagetitle => pagetitle, :file => fname }                
+                        
+            # render textile
+            html = RedCloth.new( textile ).to_html            
+            
+            # Fetch Images and replace src path
+            html = images.fetch( html )
+            _build_page( page, html, %Q(#{contentdir}/#{fname}) )
+
+            @pages.push page
+        }
 
         # sort by filename
         @pages.sort! {|a, b| a[:file] <=> b[:file]}
