@@ -273,7 +273,7 @@ class Markdown2EPUB
                 pagetitle = $1.chomp
                 md[ get_title ] = ""
             else 
-                pagetitle = "Title not Found"
+                pagetitle = File.basename(file, ".*")
             end
             fname = File.basename(file, ".md") << ".xhtml"
             page = {:pagetitle => pagetitle, :file => fname }                
