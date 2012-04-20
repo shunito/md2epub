@@ -20,12 +20,12 @@ require 'mime/types'
 require 'RedCloth'
 
 class FetchImages
-    def initialize( dir )
+    def initialize( tmpdir , resourcedir)
         @text = []
-        @basedir = Dir.pwd
+        @basedir = resourcedir
         @resourcedir = @basedir
         @assetdir = @basedir + "/assets/"
-        @imagedir = dir + "/OEBPS/images/"
+        @imagedir = tmpdir + "/OEBPS/images/"
         @imglist = []
         FileUtils.makedirs(@imagedir)
     end
@@ -49,6 +49,9 @@ class FetchImages
     end    
     
     def fetch( text )
+    
+        pwd = Dir::pwd
+        Dir::chdir(@resourcedir)
 
         # Regexp image URL
         reg = /img.+src=[\"|\']?([\-_\.\!\~\*\'\(\)a-zA-Z0-9\;\/\?\:@&=\$\,\%\#]+\.(jpg|jpeg|png|gif|bmp))/i
@@ -57,6 +60,8 @@ class FetchImages
             url = item[0]
             id = Digest::MD5.new.update(item[0]).to_s
             filename = %Q(#{id}.#{item[1]})
+            
+            p url
             
             if _fetchImage( url, filename ) then            
                 img =  {
@@ -70,6 +75,7 @@ class FetchImages
             text.gsub!(url , apimgfile)
         end
                 
+        Dir::chdir(pwd)
         return text
     end
 
@@ -250,7 +256,7 @@ class Markdown2EPUB
         @tmpdir = Dir.mktmpdir("md2epub", @basedir)
 
         # Fetch Image Class
-        images = FetchImages.new( @tmpdir )
+        images = FetchImages.new( @tmpdir, @resourcedir )
 
         # copy Asset Files
         _copy_asset_files()
