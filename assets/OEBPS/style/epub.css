@@ -28,9 +28,8 @@ header h1 {
     margin-top: 0.5em;
     padding: 0.2em;
     font-size: 170%;
-    background-color: #EEE;
-    border: 1px solid #DDD;
     margin-bottom:1em;
+    border-left:7px solid #ccc;  
 }
 
 h1 {

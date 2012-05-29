@@ -55,6 +55,8 @@ class FetchImages
 
         # Regexp image URL
         reg = /img.+src=[\"|\']?([\-_\.\!\~\*\'\(\)a-zA-Z0-9\;\/\?\:@&=\$\,\%\#]+\.(jpg|jpeg|png|gif|bmp))/i
+        
+        text = text.encode("UTF-16", :invalid => :replace, :replace => '').encode("UTF-8")
 
         text.scan(reg).each do |item|
             url = item[0]
@@ -173,7 +175,7 @@ class Markdown2EPUB
     def _build_cover
         html = ""
         pages = @pages
-        erbfile = @assetdir +"cover.html.erb"
+        erbfile = @assetdir +"cover.xhtml.erb"
         
         open(erbfile, 'r') {|erb|
             html = ERB.new( erb.read , nil, '-').result(binding)
@@ -183,6 +185,18 @@ class Markdown2EPUB
         }
     end       
 
+    def _build_colophone
+        html = ""
+        pages = @pages
+        erbfile = @assetdir +"colophone.xhtml.erb"
+        
+        open(erbfile, 'r') {|erb|
+            html = ERB.new( erb.read , nil, '-').result(binding)
+            open( @tmpdir + "/OEBPS/text/colophone.xhtml", "w") {|f|
+                    f.write( html )
+            }
+        }
+    end  
     
     def _load_settings
         file = @resourcedir + "/epub.yaml"
@@ -227,6 +241,27 @@ class Markdown2EPUB
         FileUtils.cp( %Q(#{tmpdir}/#{epubfile}), @resourcedir)
     end
 
+
+    def pre_replace( str )
+        str.gsub!("&", "&amp;")
+        str.gsub!(/^===(.+)===/,"<h2>\\1</h2>")
+        str.gsub!(/^==(.+)==/,"<h3>\\1</h3>")
+        str.gsub!(/<h2>(=+)<\/h2>/,"")
+        
+        # footnote
+        footnotes = Array.new
+        str.gsub!(/\[\*([\d]+)\]/){
+            unless footnotes[$1.to_i] then
+                footnotes[$1.to_i] = true
+                '[<a epub:type="noteref" id="ref'+ $1 +'" href="#note' + $1 +'">*' + $1 +'</a>]'
+            else
+                '[<a class="footnote" id="note'+ $1 +'" href="#ref' + $1 +'">*' + $1 +'</a>]'
+            end
+        }
+        
+        return str    
+    end
+
    
     def build
         puts %Q(BUILD::#{@resourcedir})
@@ -244,7 +279,6 @@ class Markdown2EPUB
             :lax_html_blocks => true,
             :no_intra_emphasis => true,
             :no_intraemphasis => true,
-            :space_after_headers => true,
             :strikethrough => true,
             :superscript => true,
             :tables => true,
@@ -270,22 +304,33 @@ class Markdown2EPUB
         
         # markdown to HTML
         get_title = Regexp.new('^[#=] (.*)$')
+        get_title2 = Regexp.new('^[0-9]*\.(.*)$')
 
-        Dir::glob( @resourcedir + "/*.{md,mkd,markdown}" ).each {|file|
+        Dir::glob( @resourcedir + "/*.{md,mkd,markdown,txt}" ).each {|file|
             # puts "#{file}: #{File::stat(file).size} bytes"
-            md = File.read( file )
+            md = File.read( file ).encode("UTF-8")            
             html =""
+
+            # pre Replace
+            md = pre_replace( md )
             
             get_title =~ md
             if $1 then
                 pagetitle = $1.chomp
                 md[ get_title ] = ""
             else 
-                pagetitle = File.basename(file, ".*")
+                get_title2 =~ md
+                if $1 then
+                    pagetitle = $1.chomp
+                    md[ get_title2 ] = ""
+                else
+                    pagetitle = File.basename(file, ".*")
+                end
             end
             fname = File.basename(file, ".md") << ".xhtml"
             page = {:pagetitle => pagetitle, :file => fname }                
-                        
+            
+            
             # render markdown
             html = rndr.render( md )
             
@@ -303,6 +348,9 @@ class Markdown2EPUB
             # puts "#{file}: #{File::stat(file).size} bytes"
             textile = File.read( file )
             html =""
+
+            # pre Replace
+            textile = pre_replace( textile )
             
             get_title =~ textile
             if $1 then
@@ -333,6 +381,9 @@ class Markdown2EPUB
         
         # build cover page
         _build_cover()
+        
+        # build colophone page
+        _build_colophone()
         
         # ZIP!
         make_epub( @tmpdir , @bookname )

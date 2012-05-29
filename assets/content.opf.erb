@@ -17,6 +17,7 @@
     <item id="text.cover.xhtml" href="text/cover.xhtml" media-type="application/xhtml+xml" />
     <% pages.each do |p| %><item id="text.<%= p[:file] %>" href="text/<%= p[:file] %>" media-type="application/xhtml+xml" />
     <% end -%>
+    <item id="text.colophone.xhtml" href="text/colophone.xhtml" media-type="application/xhtml+xml" />
     <% imagelist.each do |img| %><item id="images.<%= img[:fname] %>" href="images/<%= img[:fname] %>" media-type="<%= img[:mediatype] %>" />
     <% end -%>
     <item id="style.epub.css" href="style/epub.css" media-type="text/css" />
@@ -24,7 +25,8 @@
   <spine page-progression-direction="rtl">
     <itemref idref="text.cover.xhtml" linear="yes" />
     <% pages.each do |p| %><itemref idref="text.<%= p[:file] %>" linear="yes" />
-    <% end -%></spine>
+    <% end -%>
+    <itemref idref="text.colophone.xhtml" linear="yes" /></spine>
   <guide>
     <reference type="cover" title="Cover Page" href="text/cover.xhtml" />
   </guide>

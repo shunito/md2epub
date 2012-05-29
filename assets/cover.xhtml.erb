@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="<%= @lang %>">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="../style/epub.css" type="text/css" />
+  <title><%= @booktitle %></title>
+</head>
+<body class="cover" epub:type="cover">
+<header>
+    <h1 id="contentIndex_id_1"><%= @booktitle %></h1>
+    <p class="number">2012.4.25（vol.31）</p>
+</header>
+<article>
+
+<h2>目次</h2>
+    <ol>
+    <% pages.each do |p| %>
+        <li><a href="<%= p[:file] %>"><%= p[:pagetitle] %></a></li><% end %>
+        <li><a href="colophone.xhtml">奥付</a></li>
+    </ol>
+    <div class="information">
+      <p>※vol.31はゴールデンウィーク合併号です。5月2日は配信を休み、5月9日から通常配信に戻ります。</p>
+    </div>
+
+</article>
+</body>
+</html>
