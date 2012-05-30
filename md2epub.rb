@@ -244,9 +244,13 @@ class Markdown2EPUB
 
     def pre_replace( str )
         str.gsub!("&", "&amp;")
-        str.gsub!(/^===(.+)===/,"<h2>\\1</h2>")
-        str.gsub!(/^==(.+)==/,"<h3>\\1</h3>")
-        str.gsub!(/<h2>(=+)<\/h2>/,"")
+        str.gsub!(/^([=-]+)(.+)$/){
+            $&.gsub(/[=-]/,"#")
+        }
+
+        str.gsub!(/^■(.+)$/){
+            $&.gsub("■","###")
+        }
         
         # footnote
         footnotes = Array.new
