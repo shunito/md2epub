@@ -257,15 +257,27 @@ class Markdown2EPUB
         str.gsub!(/\[\*([\d]+)\]/){
             unless footnotes[$1.to_i] then
                 footnotes[$1.to_i] = true
-                '[<a epub:type="noteref" id="ref'+ $1 +'" href="#note' + $1 +'">*' + $1 +'</a>]'
+                '<a class="fn" epub:type="noteref" id="ref'+ $1 +'" href="#note' + $1 +'">*' + $1 +'</a>'
             else
-                '[<a class="footnote" id="note'+ $1 +'" href="#ref' + $1 +'">*' + $1 +'</a>]'
+                '[footnote=' + $1 + ']'
             end
         }
         
         return str    
     end
 
+    def after_replace( str )
+        str += ""
+        
+        unless str.valid_encoding? then
+            str = str.encode("UTF-8", "UTF-8", :invalid => :replace, :undef => :replace, :replace => '?')
+        end
+        str.gsub!(/^<p>\[footnote=([\d]+)\]/){
+            '<p epub:type="footnote" id="note'+ $1 +'"><a class="fn" href="#ref'+ $1 +'">*' + $1 +'</a>'
+        }
+
+        return str    
+    end
    
     def build
         puts %Q(BUILD::#{@resourcedir})
@@ -337,6 +349,9 @@ class Markdown2EPUB
             
             # render markdown
             html = rndr.render( md )
+
+            # after Replace
+            html = after_replace( html )
             
             # Fetch Images and replace src path
             html = images.fetch( html )

@@ -11,6 +11,7 @@
     </header>
     <nav epub:type="toc" id="toc">
       <ol>
+          <li><a href="text/cover.xhtml">表紙</a></li>
       <% pages.each do |p| %>
           <li><a href="text/<%= p[:file] %>"><%= p[:pagetitle] %></a></li><% end %>
           <li><a href="text/colophone.xhtml">奥付</a></li>
