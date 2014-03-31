@@ -36,8 +36,7 @@ class FetchImages
             if img[:url] == url then
                 puts "already :" + url
                 return nil
-            end
-        }
+            end }
     
         open(@imagedir + filename, 'wb') do |file|
             open(url) do |data|
@@ -269,7 +268,8 @@ class Markdown2EPUB
         FileUtils.mkdir( contentdir )
         
         # markdown to HTML
-        get_title = Regexp.new('^[#=] (.*)$')
+        get_title = Regexp.new('(^[#=] (.*)$|(.*)\n={3,})')
+
 
         Dir::glob( @resourcedir + "/*.{md,mkd,markdown}" ).each {|file|
             # puts "#{file}: #{File::stat(file).size} bytes"
@@ -278,10 +278,12 @@ class Markdown2EPUB
             
             get_title =~ md
             if $1 then
-                pagetitle = $1.chomp
+				titlestr = $2 ? $2 : $3
+
+                pagetitle = titlestr.chomp
                 md[ get_title ] = ""
             else 
-                pagetitle = File.basename(file, ".*")
+				pagetitle = File.basename(file, ".*")
             end
             fname = File.basename(file, ".md") << ".xhtml"
             page = {:pagetitle => pagetitle, :file => fname }                
